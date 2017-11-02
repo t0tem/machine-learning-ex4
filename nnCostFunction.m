@@ -86,15 +86,9 @@ J = -1/m * (trace(yv'*log(h)) + trace((1-yv)'*log(1-h)));
 % and then summing diagonal elements of the result. apparently it's the same as
 % above sum(sum(...)) of elementwise multiplication
 
-
-
-
-
-
-
-
-
-
+% adding regularization to cost function
+J +=  lambda/(2*m) * (sum(sum(Theta1(:, 2:end).^2)) + ...
+      sum(sum(Theta2(:, 2:end).^2)));
 
 
 
