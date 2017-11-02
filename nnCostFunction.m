@@ -62,11 +62,6 @@ Theta2_grad = zeros(size(Theta2));
 %               and Theta2_grad from Part 2.
 %
 
-a1 = [ones(m, 1) X]; %adding bias unit to input layer
-a2 = sigmoid(a1*Theta1'); % activating 2nd (hidden) layer
-a2 = [ones(size(a2, 1), 1) a2]; %adding bias unit to hidden layer
-a3 = sigmoid(a2*Theta2'); % activating output layer
-h = a3; % hypothesis
 
 % mapping vector y
 % elegant way from tutorial of Prog.ex.4
@@ -75,7 +70,19 @@ h = a3; % hypothesis
 % another elegant way with diagonal matrix
 yv = eye(num_labels)(y,:); % class 'double'
 
-% one way to have unregularized cost function. elementwise multiplication 
+% forward propagation
+
+a1 = [ones(m, 1) X]; %adding bias unit to input layer
+z2 = a1*Theta1';
+a2 = sigmoid(z2); % activating 2nd (hidden) layer
+a2 = [ones(size(a2, 1), 1) a2]; %adding bias unit to hidden layer
+z3 = a2*Theta2';
+a3 = sigmoid(z3); % activating output layer
+h = a3; % hypothesis
+
+% cost function
+
+% one way to have unregularized cost function - elementwise multiplication 
 % of matrices of y and h. and then summing by columns and by rows
 %J = -1/m * (sum(sum(yv.*log(h))) + sum(sum((1-yv).*log(1-h))));
 
@@ -90,7 +97,33 @@ J = -1/m * (trace(yv'*log(h)) + trace((1-yv)'*log(1-h)));
 J +=  lambda/(2*m) * (sum(sum(Theta1(:, 2:end).^2)) + ...
       sum(sum(Theta2(:, 2:end).^2)));
 
+% back propagation
 
+Delta1 = zeros(size(Theta1));
+Delta2 = zeros(size(Theta2));
+
+for i = 1:m, % for every example
+  % feeding forward
+  a1 = X(i,:)'; % activating input layer
+  a1 = [1 ; a1]; % adding bias unit
+  z2 = Theta1*a1;
+  a2 = sigmoid(z2); % activating 2nd (hidden) layer
+  a2 = [1 ; a2]; % adding bias unit
+  z3 = Theta2*a2;
+  a3 = sigmoid(z3);
+  
+  % feeding back
+  d3 = a3 - ([1:num_labels] == y(i))'; % alt. " -yv(i,:)'; "
+  d2 = Theta2(:,2:end)'*d3.*sigmoidGradient(z2);
+  
+  Delta2 += d3*a2';
+  Delta1 += d2*a1'; 
+  
+end;
+
+% unregularized gradient
+Theta1_grad = 1/m*Delta1;
+Theta2_grad = 1/m*Delta2;
 
 
 % -------------------------------------------------------------
