@@ -62,10 +62,29 @@ Theta2_grad = zeros(size(Theta2));
 %               and Theta2_grad from Part 2.
 %
 
+a1 = [ones(m, 1) X]; %adding bias unit to input layer
+a2 = sigmoid(a1*Theta1'); % activating 2nd (hidden) layer
+a2 = [ones(size(a2, 1), 1) a2]; %adding bias unit to hidden layer
+a3 = sigmoid(a2*Theta2'); % activating output layer
+h = a3; % hypothesis
 
+% mapping vector y
+% elegant way from tutorial of Prog.ex.4
+%yv = [1:num_labels] == y; % class 'logical'
 
+% another elegant way with diagonal matrix
+yv = eye(num_labels)(y,:); % class 'double'
 
+% one way to have unregularized cost function. elementwise multiplication 
+% of matrices of y and h. and then summing by columns and by rows
+%J = -1/m * (sum(sum(yv.*log(h))) + sum(sum((1-yv).*log(1-h))));
 
+% another way from here
+% https://www.coursera.org/learn/machine-learning/discussions/all/threads/AzIrrO7wEeaV3gonaJwAFA?sort=createdAtAsc&page=1
+J = -1/m * (trace(yv'*log(h)) + trace((1-yv)'*log(1-h))); 
+% trace(A) is sum(diag(A)). we're multiplying matrices (transposing left one first)
+% and then summing diagonal elements of the result. apparently it's the same as
+% above sum(sum(...)) of elementwise multiplication
 
 
 
