@@ -125,6 +125,14 @@ end;
 Theta1_grad = 1/m*Delta1;
 Theta2_grad = 1/m*Delta2;
 
+% calculating regularization for gradient (excl. bias term - i.e. 1st column)
+reg1 = lambda/m*Theta1(:,2:end);
+reg2 = lambda/m*Theta2(:,2:end);
+
+% adding regularization to gradient (excl. bias term - i.e. 1st column)
+Theta1_grad(:,2:end) += reg1;
+Theta2_grad(:,2:end) += reg2;
+
 
 % -------------------------------------------------------------
 
